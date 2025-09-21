@@ -2,7 +2,11 @@
   "rewrites": [
     {
       "source": "/api/lottery/(.*)",
-      "destination": "/api/lottery"
+      "destination": "/api/unified"
+    },
+    {
+      "source": "/api/admin/(.*)",
+      "destination": "/api/unified"
     },
     {
       "source": "/api/(.*)",
