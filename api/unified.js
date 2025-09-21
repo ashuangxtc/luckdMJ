@@ -50,7 +50,15 @@ export default function handler(req, res) {
     req.body = body;
 
     // 路由分发 - 总是显示演示数据
-    if (path.includes('/admin/login')) {
+    if (path.includes('/health')) {
+      return res.status(200).json({
+        ok: true,
+        ts: Date.now(),
+        env: process.env.NODE_ENV || 'production',
+        message: 'Unified API is healthy',
+        vercel: !!process.env.VERCEL
+      });
+    } else if (path.includes('/admin/login')) {
       return handleAdminLogin(req, res);
     } else if (path.includes('/admin/me')) {
       return handleAdminMe(req, res);
