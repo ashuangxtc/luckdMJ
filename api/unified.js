@@ -8,6 +8,9 @@ const clientIdToPid = new Map();
 let nextPid = 0;
 const MAX_PID = 1000;
 
+// 重置标记 - 用于控制演示数据显示
+let isDataReset = false;
+
 export default async function handler(req, res) {
   // 设置 CORS 头
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -183,8 +186,8 @@ function handleAdminParticipantsWithDemo(req, res) {
     
     console.log(`管理员查看参与者列表: 共${all.length}人`);
     
-    // 总是添加演示数据来解决serverless状态问题
-    const demoParticipants = [
+    // 只有在数据未被重置时才显示演示数据
+    const demoParticipants = isDataReset ? [] : [
       {
         pid: 1001,
         clientId: 'demo-user-1',
@@ -256,7 +259,7 @@ function handleAdminParticipantsWithDemo(req, res) {
         winners: allParticipants.filter(p => p.win === true).length,
         pending: allParticipants.filter(p => !p.participated).length
       },
-      note: all.length === 0 ? "演示数据：当前显示模拟参与者（Serverless环境限制）" : `实时数据 + ${demoParticipants.length} 个演示用户`
+      note: isDataReset ? "数据已重置：当前无参与者" : (all.length === 0 ? "演示数据：当前显示模拟参与者（Serverless环境限制）" : `实时数据 + ${demoParticipants.length} 个演示用户`)
     });
   } catch (error) {
     if (error.message === 'NO_TOKEN' || error.message === 'ADMIN_REQUIRED') {
@@ -391,9 +394,10 @@ function handleAdminResetAll(req, res) {
     rounds.clear();
     clientIdToPid.clear();
     nextPid = 0;
+    isDataReset = true; // 标记数据已重置
     
     console.log('管理员重置所有数据');
-    return res.json({ ok: true });
+    return res.json({ ok: true, message: '所有参与者数据已清除' });
   } catch (error) {
     if (error.message === 'NO_TOKEN' || error.message === 'ADMIN_REQUIRED') {
       return res.status(401).json({ ok: false, error: error.message });
@@ -480,6 +484,12 @@ function handleLotteryJoin(req, res) {
   participants.set(pid, record);
   if (clientId) clientIdToPid.set(clientId, pid);
   
+  // 有新用户加入时，清除重置标记
+  if (isDataReset) {
+    isDataReset = false;
+    console.log('检测到新用户加入，清除重置标记');
+  }
+  
   res.setHeader('Set-Cookie', `pid=${pid}; HttpOnly; Max-Age=${7*24*3600}; SameSite=Lax; Path=/`);
   
   console.log(`新用户加入: PID=${pid}, ClientId=${clientId}, 当前参与者总数=${participants.size}`);
@@ -523,6 +533,13 @@ function handleLotteryDraw(req, res) {
     participants.set(pid, record);
     clientIdToPid.set(clientId, pid);
     p = record;
+    
+    // 有新用户加入时，清除重置标记
+    if (isDataReset) {
+      isDataReset = false;
+      console.log('检测到新用户抽奖加入，清除重置标记');
+    }
+    
     res.setHeader('Set-Cookie', `pid=${pid}; HttpOnly; Max-Age=${7*24*3600}; SameSite=Lax; Path=/`);
   }
 
