@@ -8,7 +8,7 @@ const clientIdToPid = new Map();
 let nextPid = 0;
 const MAX_PID = 1000;
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   // 设置 CORS 头
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
