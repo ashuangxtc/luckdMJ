@@ -1,0 +1,96 @@
+.deck{
+  position:relative;
+  width:min(92vw,720px);
+  height:420px;
+  margin:0 auto;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.prob-tip{
+  font-size:14px;
+  opacity:.7;
+}
+
+.btn-primary{
+  padding:8px 16px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,#ff4d4f,#ff7a45);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.15);
+}
+
+.btn-primary:hover{
+  background:linear-gradient(135deg,#ff7875,#ffa940);
+  transform:translateY(-1px);
+}
+
+.card{
+  position:absolute;
+  left:50%;
+  top:56%; /* 基准中心位 */
+  transition:transform .6s ease, opacity .4s ease;
+  will-change:transform,opacity;
+  cursor:pointer;
+}
+
+/* DEMO & FANOUT：等距展开 */
+.deck.demo .card:nth-child(2){ 
+  transform:translate(calc(-50% - 160px), -50%);
+}
+
+.deck.demo .card:nth-child(3){ 
+  transform:translate(-50%, -50%);
+}
+
+.deck.demo .card:nth-child(4){ 
+  transform:translate(calc(-50% + 160px), -50%);
+}
+
+.deck.fanout .card:nth-child(2){ 
+  transform:translate(calc(-50% - 160px), -50%);
+}
+
+.deck.fanout .card:nth-child(3){ 
+  transform:translate(-50%, -50%);
+}
+
+.deck.fanout .card:nth-child(4){ 
+  transform:translate(calc(-50% + 160px), -50%);
+}
+
+/* STACK：重叠 */
+.deck.stack .card{ 
+  transform:translate(-50%, -50%);
+}
+
+/* WAIT：呼吸动画，提示可点选 */
+.deck.wait .card{
+  animation:breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes breathe{
+  0%{ transform:translate(var(--x, -50%), var(--y, -50%)) scale(1) }
+  50%{ transform:translate(var(--x, -50%), var(--y, -50%)) scale(1.04) }
+  100%{ transform:translate(var(--x, -50%), var(--y, -50%)) scale(1) }
+}
+
+/* 选中后其他两张淡出 */
+.fade{ 
+  opacity:.18;
+}
+
+/* 选中的牌放大 */
+.selected{
+  transform:translate(-50%, -50%) scale(1.1) !important;
+  z-index:10;
+}
+

@@ -1,0 +1,33 @@
+.mj-tiler{
+  position:relative;
+  perspective:1000px;
+  user-select:none;
+}
+
+.mj-face{
+  position:absolute;
+  inset:0;
+  border-radius:12px;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  backface-visibility:hidden;
+  transition:transform .48s cubic-bezier(.22,.61,.36,1), opacity .24s;
+}
+
+.mj-back{
+  transform:rotateY(0);
+}
+
+.mj-front{
+  transform:rotateY(180deg);
+}
+
+.mj-tiler.is-flipped .mj-back{
+  transform:rotateY(180deg);
+}
+
+.mj-tiler.is-flipped .mj-front{
+  transform:rotateY(360deg);
+}
+
