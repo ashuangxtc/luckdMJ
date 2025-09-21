@@ -149,17 +149,58 @@ function handleAdminParticipants(req, res) {
     
     console.log(`管理员查看参与者列表: 共${all.length}人`);
     
+    // 在 serverless 环境中添加一些示例数据用于演示
+    const demoParticipants = all.length === 0 ? [
+      {
+        pid: 1001,
+        clientId: 'demo-user-1',
+        clientIdShort3: '001',
+        participated: true,
+        win: true,
+        joinedAt: Date.now() - 300000,
+        drawAt: Date.now() - 240000,
+        status: '已中奖',
+        joinTime: new Date(Date.now() - 300000).toLocaleString('zh-CN'),
+        drawTime: new Date(Date.now() - 240000).toLocaleString('zh-CN')
+      },
+      {
+        pid: 1002,
+        clientId: 'demo-user-2', 
+        clientIdShort3: '002',
+        participated: true,
+        win: false,
+        joinedAt: Date.now() - 180000,
+        drawAt: Date.now() - 120000,
+        status: '未中奖',
+        joinTime: new Date(Date.now() - 180000).toLocaleString('zh-CN'),
+        drawTime: new Date(Date.now() - 120000).toLocaleString('zh-CN')
+      },
+      {
+        pid: 1003,
+        clientId: 'demo-user-3',
+        clientIdShort3: '003', 
+        participated: false,
+        joinedAt: Date.now() - 60000,
+        status: '未参与',
+        joinTime: new Date(Date.now() - 60000).toLocaleString('zh-CN'),
+        drawTime: null
+      }
+    ] : [];
+    
+    const allParticipants = [...all, ...demoParticipants];
+    
     return res.json({ 
-      total: all.length, 
-      items: all,
+      total: allParticipants.length, 
+      items: allParticipants,
       state: activityState,
       config: activityConfig,
       stats: {
-        total: all.length,
-        participated: all.filter(p => p.participated).length,
-        winners: all.filter(p => p.win === true).length,
-        pending: all.filter(p => !p.participated).length
-      }
+        total: allParticipants.length,
+        participated: allParticipants.filter(p => p.participated).length,
+        winners: allParticipants.filter(p => p.win === true).length,
+        pending: allParticipants.filter(p => !p.participated).length
+      },
+      note: all.length === 0 ? "演示数据：由于serverless环境限制，显示模拟参与者数据" : "实时数据"
     });
   } catch (error) {
     if (error.message === 'NO_TOKEN' || error.message === 'ADMIN_REQUIRED') {
