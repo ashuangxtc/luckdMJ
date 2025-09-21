@@ -1,5 +1,4 @@
-// 管理员会话存储 (在实际应用中应使用数据库)
-const adminSessions = new Map();
+import { verifyJWT, parseCookies } from '../lib/auth.js';
 
 export default function handler(req, res) {
   // 设置 CORS 头
@@ -17,35 +16,25 @@ export default function handler(req, res) {
   }
 
   try {
-    // 从 Cookie 中获取 token
+    // 从 Cookie 中获取 JWT token
     const cookies = parseCookies(req.headers.cookie || '');
     const token = cookies.admin_session;
     
-    if (!token || !adminSessions.has(token)) {
-      return res.status(401).json({ ok: false });
+    if (!token) {
+      return res.status(401).json({ ok: false, error: 'NO_TOKEN' });
     }
     
-    const expiresAt = adminSessions.get(token);
-    if (Date.now() > expiresAt) {
-      adminSessions.delete(token);
-      return res.status(401).json({ ok: false, error: 'SESSION_EXPIRED' });
+    // 验证 JWT token
+    const payload = verifyJWT(token);
+    if (!payload || !payload.admin) {
+      return res.status(401).json({ ok: false, error: 'INVALID_TOKEN' });
     }
     
-    return res.json({ ok: true, expiresAt });
+    console.log('Session verified for admin, expires at:', payload.exp);
+    return res.json({ ok: true, expiresAt: payload.exp });
     
   } catch (error) {
     console.error('Me endpoint error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
-}
-
-function parseCookies(cookieString) {
-  const cookies = {};
-  cookieString.split(';').forEach(cookie => {
-    const [name, value] = cookie.trim().split('=');
-    if (name && value) {
-      cookies[name] = value;
-    }
-  });
-  return cookies;
 }
