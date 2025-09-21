@@ -247,7 +247,7 @@ function handleAdminParticipantsWithDemo(req, res) {
         joinTime: new Date(Date.now() - 30000).toLocaleString('zh-CN'),
         drawTime: null
       }
-    ];
+    ] : [];
     
     const allParticipants = [...all, ...demoParticipants];
     
