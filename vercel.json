@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
+      "source": "/api/lottery/(.*)",
+      "destination": "/api/lottery"
+    },
+    {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/api/$1"
     },
     {
       "source": "/(.*)",
