@@ -11,9 +11,9 @@
 // }
 
 // 活动状态：'waiting' | 'open' | 'closed'
-// 从环境变量读取，默认为 'waiting'
+// 从环境变量读取，默认为 'open' (为了演示方便)
 const getActivityState = () => {
-  return process.env.ACTIVITY_STATE || 'waiting';
+  return process.env.ACTIVITY_STATE || 'open';
 };
 
 // 活动配置
